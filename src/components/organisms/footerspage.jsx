@@ -1,4 +1,4 @@
-import { Instagram,  Facebook } from "lucide-react";
+import { Instagram, Facebook } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 function Footer() {
@@ -13,34 +13,33 @@ function Footer() {
 
             <div className="mb-5 text-justify">
               <p>
-              Discover the beauty and richness of traditional attire from around the world. Our collection celebrates cultural heritage and artistic craftsmanship.
+                Discover the beauty and richness of traditional attire from
+                around the world. Our collection celebrates cultural heritage
+                and artistic craftsmanship.
               </p>
             </div>
 
             <div className="flex flex-row">
-
               <div className="m-5 rounded-full text-white">
                 <Instagram />
               </div>
               <div className="m-5 rounded-full  text-white">
                 <Facebook />
               </div>
-
             </div>
           </div>
-
           <div>
             <div>
               <h1 className="text-red-500 mb-5">Page</h1>
             </div>
             <div>
-              <NavLink to='/' >Home</NavLink>
+              <NavLink to="/">Home</NavLink>
             </div>
             <div>
-            <NavLink to='/dress-code' >Category</NavLink>
+              <NavLink to="/dress-code">Category</NavLink>
             </div>
             <div>
-            <NavLink to='/cart' >View Cart</NavLink>
+              <NavLink to="/cart">View Cart</NavLink>
             </div>
           </div>
           <div>
@@ -48,7 +47,7 @@ function Footer() {
               <h1 className="text-red-500 mb-5">Information</h1>
             </div>
             <div>
-            <NavLink to='/about' > About Us</NavLink>
+              <NavLink to="/about"> About Us</NavLink>
             </div>
           </div>
           <div className=" leading-7">
@@ -59,7 +58,7 @@ function Footer() {
               <h1>Bhaktahpur, Nepal</h1>
             </div>
             <div>
-              <h1>anjali@gmail.com</h1>
+              <h1>anjalilawoju@gmail.com</h1>
             </div>
           </div>
         </div>

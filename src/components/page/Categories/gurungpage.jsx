@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../header/header2";
 import axios from "axios";
-import CategoryButton from "../../atoms/CategoryButton.jsx"; 
+import CategoryButton from "../../atoms/CategoryButton.jsx";
 import ProductDisplay from "../../organisms/ProductDisplay/ProductDisplay.jsx";
 import Footer from "../../organisms/footerspage.jsx";
 
@@ -10,7 +10,7 @@ const Gurungpage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [picks, setPicks] = useState([]);
-  const [arrivals, setArrivals]=useState([]);
+  const [arrivals, setArrivals] = useState([]);
   useEffect(() => {
     axios
       .get("http://127.0.0.1:8000/gurung/")
@@ -52,7 +52,6 @@ const Gurungpage = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-
   }, []);
 
   if (loading) {
@@ -74,19 +73,22 @@ const Gurungpage = () => {
         <div className="max-w-screen-xl mx-auto px-4 text-Start">
           <h1 className="text-4xl md:text-5xl font-bold">Gurung Dress</h1>
           <p className="mt-4 text-lg md:text-xl text-gray-700 flex justify-between items-center">
-          "Timeless beauty and tradition, beautifully expressed through Gurung dress."
+            "Timeless beauty and tradition, beautifully expressed through Gurung
+            dress."
           </p>
         </div>
         {/* Our Products section */}
         <div className="py-10 max-w-screen-xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold">Our Products</h1>
           <p className="mt-4 text-lg md:text-xl text-gray-700 text-center">
-            Discover the latest additions to our collection of traditional attire, showcasing the rich heritage and <br/>unique styles of various cultures.
+            Discover the latest additions to our collection of traditional
+            attire, showcasing the rich heritage and <br />
+            unique styles of various cultures.
           </p>
           <div className="flex flex-wrap  gap-16 py-10">
             {products.map((product, index) => (
               <ProductDisplay
-                key={index}  
+                key={index}
                 product_id={product.id}
                 image={`http://localhost:8000${product.image}`}
                 productName={product.desc}
@@ -98,19 +100,19 @@ const Gurungpage = () => {
             ))}
           </div>
         </div>
-       {/* New Arrivals Section */}
-       <div className="py-10 max-w-screen-xl mx-auto px-4 text-start">
+        {/* New Arrivals Section */}
+        <div className="py-10 max-w-screen-xl mx-auto px-4 text-start">
           <h1 className="text-4xl md:text-5xl font-bold">New Arrivals </h1>
           <div className="flex justify-between items-center">
             <p className="mt-4 text-lg md:text-xl text-gray-700">
               Explore our newest additions to the Gurung collection
-            </p>          
+            </p>
           </div>
           <div className="flex flex-wrap  gap-16 py-10">
             {arrivals.map((product, index) => (
               <ProductDisplay
-                key={index} 
-                product_id={product.id} 
+                key={index}
+                product_id={product.id}
                 image={`http://127.0.0.1:8000${product.image}`}
                 productName={product.desc}
                 price={product.price}
@@ -131,7 +133,7 @@ const Gurungpage = () => {
             {picks.map((product, index) => (
               <ProductDisplay
                 key={index}
-                product_id={product.id}  
+                product_id={product.id}
                 image={`http://localhost:8000${product.image}`}
                 productName={product.desc}
                 price={product.price}
@@ -152,14 +154,18 @@ const Gurungpage = () => {
             />
           </div>
           <div className="w-full md:w-1/2 px-4">
-            <h2 className="text-3xl md:text-4xl font-bold">Hear it from our Designers</h2>
+            <h2 className="text-3xl md:text-4xl font-bold">
+              Hear it from our Designers
+            </h2>
             <p className="mt-4 text-lg md:text-xl text-gray-700">
-              Discover the vision and inspiration behind our Gurung collection. Get an inside look at the artistry and dedication of our designers.
+              Discover the vision and inspiration behind our Gurung collection.
+              Get an inside look at the artistry and dedication of our
+              designers.
             </p>
           </div>
         </div>
-         {/* Footer Section */}
-      <Footer/>
+        {/* Footer Section */}
+        <Footer />
       </div>
     </>
   );

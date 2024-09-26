@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { CiSearch } from "react-icons/ci";
 
 const SearchBar = ({ label, value, onChange, type }) => {
+  
   return (
     <form className="w-80">
       <label
