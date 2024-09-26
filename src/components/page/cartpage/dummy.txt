@@ -1,0 +1,188 @@
+import React, { useState, useEffect } from "react";
+import ProductDisplay from "../../organisms/ProductDisplay/ProductDisplay.jsx";
+import { Undo2, X, Star } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { remove } from "../../Redux/Action/action.js";
+import { useNavigate } from "react-router-dom";
+import cartemptypageImage from '../../../components/Images/cart.png'; 
+import axios from "axios";
+import Header2 from "../header/header2";
+import Footer from "../../organisms/footerspage.jsx";
+
+function Cart() {
+  const dispatch = useDispatch();
+  const cartProduct = useSelector((state) => state.product);
+  const navigate = useNavigate();
+
+  const [filterProduct, setFilterProduct] = useState([]);
+  const [checkOut, setCheckOut] = useState(false);
+  const [changeAddress, setChangeAddress] = useState(false);
+  const [products, setProducts] = useState([]);
+
+  const getProductData = async () => {
+    try {
+      const responses = await Promise.all([
+        axios.get("http://127.0.0.1:8000/gurung/"),
+        axios.get("http://127.0.0.1:8000/hot-deals/"),
+        axios.get("http://127.0.0.1:8000/our-picks/"),
+        axios.get("http://127.0.0.1:8000/new-arrival/"),
+        axios.get("http://127.0.0.1:8000/magar/"),
+        axios.get("http://127.0.0.1:8000/newari/"),
+        axios.get("http://127.0.0.1:8000/sherpa/"),
+        axios.get("http://127.0.0.1:8000/tamang/"),
+        axios.get("http://127.0.0.1:8000/tharu/")
+      ]);
+
+      const allProducts = responses.flatMap((response) => response.data);
+      setProducts(allProducts);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    getProductData();
+  }, []);
+
+  useEffect(() => {
+    const filteredProduct = products.filter(product => cartProduct.includes(product.id));
+    setFilterProduct(filteredProduct.map(product => ({ ...product, itemNumber: 1, size: 'M' })));
+  }, [products, cartProduct]);
+
+  const deleteProduct = (id) => {
+    setFilterProduct((prev) => prev.filter(product => product.id !== id));
+    dispatch(remove(id));
+  };
+
+  const updateItemNumber = (index, change) => {
+    setFilterProduct((prev) => {
+      const updatedProducts = [...prev];
+      updatedProducts[index].itemNumber += change;
+      if (updatedProducts[index].itemNumber < 1) {
+        updatedProducts[index].itemNumber = 1; // Prevent going below 1
+      }
+      return updatedProducts;
+    });
+  };
+
+  const calculateTotal = () => {
+    let total = 0;
+    filterProduct.forEach(product => {
+      total += product.caloriesPerServing * product.itemNumber;
+    });
+    return total;
+  };
+
+  return (
+    <>
+      <Header2 />
+      {checkOut ? (
+        <div className="m-14 p-10">
+          {changeAddress && (
+            <div className="w-screen h-[240%] overflow-hidden left-1 -top-10 bg-opacity-50 backdrop-blur-sm absolute">
+              <div className="m-14">
+                <div className="bg-slate-100 w-[30vw] m-auto p-7">
+                  <div className="float-right">
+                    <button onClick={() => setChangeAddress(false)}>
+                      <X />
+                    </button>
+                  </div>
+                  <h1 className="font-bold text-center">Your Address</h1>
+                  <div className="flex flex-wrap h-10">
+                    <input
+                      type="text"
+                      placeholder="Enter Your Address"
+                      className="border-2 border-slate-200 w-56 rounded-sm px-2 text-xs"
+                    />
+                    <button className="w-20 ml-5 bg-red-200 text-red-500 hover:bg-red-300 rounded-sm">
+                      Search
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          <button onClick={() => setCheckOut(false)} className="float-right">
+            <Undo2 size={40} />
+          </button>
+          <div className="w-[36vw] bg-slate-300 m-auto flex flex-col justify-center p-2">
+            <h1 className="text-center text-2xl font-bold">Checkout</h1>
+            {/* Checkout Form */}
+          </div>
+        </div>
+      ) : (
+        <div className="flex my-10">
+          <div className="flex flex-col">
+            {filterProduct.length > 0 ? (
+              filterProduct.map((product, index) => (
+                <div key={product.id} className="bg-slate-200 min-h-52 w-[60vw] m-10 flex flex-row justify-around p-5">
+                  <ProductDisplay 
+                    image={product.image}
+                    productName={product.name}
+                    price={product.caloriesPerServing}
+                    rating={product.rating}
+                  />
+                  <div className="leading-10">
+                    <div className="text-3xl">RS.{product.caloriesPerServing}</div>
+                    <div className="text-3xl my-3">
+                      <div className="flex gap-1">
+                        {[...Array(Math.floor(product.rating))].map((_, idx) => (
+                          <Star key={idx} size={15} />
+                        ))}
+                      </div>
+                    </div>
+                    <button onClick={() => deleteProduct(product.id)} className="bg-red-500 text-white hover:bg-red-300 px-4">
+                      Delete
+                    </button>
+                  </div>
+                  <div>
+                    <button onClick={() => updateItemNumber(index, -1)} className="bg-red-500 text-white hover:bg-red-300 rounded w-7 p-1">-</button>
+                    <span className="border-2 border-slate-100 bg-white text-black p-1 px-3">{product.itemNumber}</span>
+                    <button onClick={() => updateItemNumber(index, 1)} className="bg-red-500 text-white hover:bg-red-300 rounded w-7 p-1">+</button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="bg-slate-100 min-h-52 w-[60vw] m-10 flex flex-row justify-around p-5">
+                <img src={cartemptypageImage} alt="empty cart" />
+                <button onClick={() => navigate("/profile")} className="bg-red-500 text-white hover:bg-red-300 p-2 rounded">
+                  Continue Shopping
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="w-[30vw] bg-slate-300 m-10 flex flex-col justify-center p-2">
+            <h1 className="text-center text-2xl font-bold">Payment Section</h1>
+            <div className="flex justify-between my-2">
+              <span>Subtotal</span>
+              <span>Rs.{calculateTotal()}</span>
+            </div>
+            <div className="flex justify-between my-2">
+              <span>Shipping Fee</span>
+              <span>Rs.0</span>
+            </div>
+            <div className="flex justify-between my-2">
+              <span>Discount on shipping Fee</span>
+              <span>Rs.0</span>
+            </div>
+            <hr className="my-4" />
+            <div className="flex justify-between my-2">
+              <span>Total Items</span>
+              <span>{filterProduct.length}</span>
+            </div>
+            <div className="flex justify-between my-2">
+              <span>Total</span>
+              <span>Rs.{calculateTotal() + 50}</span>
+            </div>
+            <button onClick={() => setCheckOut(true)} className="w-full bg-pink-200 text-black py-2 rounded-lg flex items-center justify-center mt-5">
+              Proceed to Checkout
+            </button>
+          </div>
+        </div>
+      )}
+      <Footer />
+    </>
+  );
+}
+
+export default Cart;
