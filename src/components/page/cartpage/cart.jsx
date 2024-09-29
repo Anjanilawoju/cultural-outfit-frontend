@@ -11,7 +11,7 @@ function Cart() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const shippingFee = 0;
+  const shippingFee = 50;
   const discount = 0;
 
   // Fetch cart data from API
@@ -22,7 +22,7 @@ function Cart() {
         setCart(
           response.data.map((item) => ({
             ...item,
-            size: "M", // Default size
+            size: "S", // Default size
             review: "",
             rating: 0,
           }))
@@ -96,25 +96,10 @@ function Cart() {
     setCart(newCart);
   };
 
-  const handleReviewChange = async (index, value) => {
+  const handleReviewChange = (index, value) => {
     const newCart = [...cart];
     newCart[index].review = value;
     setCart(newCart);
-
-    const item = newCart[index];
-
-    try {
-      await axios.put(`http://localhost:8000/cart/${item.id}/`, {
-        product: item.product_id,
-        quantity: item.quantity,
-        size: item.size,
-        rating: item.rating,
-        review: item.review,
-      });
-      console.log("Review updated successfully");
-    } catch (error) {
-      console.error("Error updating review:", error);
-    }
   };
 
   const calculateSubtotal = () => {
@@ -151,7 +136,7 @@ function Cart() {
             return (
               <div
                 key={item.product_id}
-                className="bg-gray-200 rounded-md p-4 w-full md:w-1/2"
+                className="bg-gray-100 rounded-md p-4 w-full md:w-3/4"
               >
                 <div className="flex justify-between">
                   <div className="flex">
@@ -206,64 +191,80 @@ function Cart() {
                                     ? "text-yellow-500"
                                     : "text-gray-400"
                                 }`}
-                                onClick={() => handleRatingChange(index, value)}
+                                onClick={() =>
+                                  handleRatingChange(index, value)
+                                }
                               >
                                 ★
                               </span>
                             ))}
                           </div>
 
-                          <div className="mt-4">
-                            <textarea
-                              value={item.review}
-                              onChange={(e) =>
-                                handleReviewChange(index, e.target.value)
-                              }
-                              className="border p-1 rounded w-full h-18 text-sm"
-                              rows="1"
-                              cols="40"
-                              placeholder="Write your review..."
-                            ></textarea>
-                            <button
-                              onClick={() => console.log(item.review)}
-                              className="mt-1 bg-blue-500 hover:bg-blue-700 text-white py-0.5 px-2 rounded"
-                            >
-                              Send Review
-                            </button>
+                          <div className="mt-4 flex items-center gap-2">
+                            <h2 className="text-lg font-semibold">
+                              Product Review:
+                            </h2>
+                            <div className="flex gap-6 ml-4">
+                              {[
+                                "Poor",
+                                "Average",
+                                "Good",
+                                "Very Good",
+                                "Excellent",
+                              ].map((value) => (
+                                <div
+                                  key={value}
+                                  className="flex items-center gap-1"
+                                >
+                                  <input
+                                    type="radio"
+                                    id={value}
+                                    name={`review-${index}`}
+                                    value={value}
+                                    onChange={(e) =>
+                                      handleReviewChange(index, e.target.value)
+                                    }
+                                  />
+                                  <label htmlFor={value} className="ml-1">
+                                    {value}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex flex-col justify-between items-end">
-                    <div className="flex items-center">
+                    <div className="flex flex-col justify-between items-end">
+                      <div className="flex items-center">
+                        <button
+                          onClick={() => handleDecrement(index)}
+                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                          -
+                        </button>
+                        <span className="mx-4 text-gray-600">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => handleIncrement(index)}
+                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      <p className="mt-4 text-lg font-bold">
+                        Rs. {product ? product.price * item.quantity : "N/A"}
+                      </p>
                       <button
-                        onClick={() => handleDecrement(index)}
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-2"
+                        onClick={() => handleDelete(index)}
                       >
-                        -
-                      </button>
-                      <span className="mx-4 text-gray-600">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => handleIncrement(index)}
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                      >
-                        +
+                        Delete
                       </button>
                     </div>
-
-                    <p className="mt-4 text-lg font-bold">
-                      Rs. {product ? product.price * item.quantity : "N/A"}
-                    </p>
-                    <button
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-2"
-                      onClick={() => handleDelete(index)}
-                    >
-                      Delete
-                    </button>
                   </div>
                 </div>
               </div>
@@ -292,8 +293,8 @@ function Cart() {
 
         {/* Order Summary Section */}
         {cart.length > 0 && (
-          <div className="bg-gray-200 rounded-md p-4 w-full md:w-1/2">
-            <h2 className="text-xl font-bold mb-4">Order payment</h2>
+          <div className="bg-gray-200 rounded-md p-4 w-full md:w-3/4">
+            <h2 className="text-xl font-bold mb-4">Order Summary</h2>
             <div className="flex justify-between">
               <p>Subtotal</p>
               <p>Rs. {subtotal}</p>

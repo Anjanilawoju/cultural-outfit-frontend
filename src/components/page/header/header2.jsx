@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LuShoppingCart } from "react-icons/lu";
-import { FaAddressBook, FaBars, FaHome, FaEnvelope, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaAddressBook,
+  FaBars,
+  FaHome,
+  FaEnvelope,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import { Link } from "react-router-dom";
 import SearchBar from "../../molecules/SearchBar/SearchBar";
 
@@ -49,13 +55,20 @@ const Header2 = () => {
             <LuShoppingCart size={24} />
             <span className="ml-2">View Cart</span>
           </Link>
+          <Link to="/Order" className="flex items-center">
+            <LuShoppingCart size={24} />
+            <span className="ml-2">Your Order</span>
+          </Link>
           <Link to="/contact" className="flex items-center">
             <FaAddressBook size={24} />
             <span className="ml-2">Contact</span>
           </Link>
 
           {/* Menu Icon */}
-          <div className="flex items-center cursor-pointer" onClick={toggleSidebar}>
+          <div
+            className="flex items-center cursor-pointer"
+            onClick={toggleSidebar}
+          >
             <FaBars size={24} />
           </div>
         </div>
@@ -71,7 +84,11 @@ const Header2 = () => {
           <ul className="space-y-6">
             <li className="flex items-center space-x-3">
               <FaHome size={20} />
-              <Link to="/profile" className="text-black" onClick={toggleSidebar}>
+              <Link
+                to="/profile"
+                className="text-black"
+                onClick={toggleSidebar}
+              >
                 Home
               </Link>
             </li>
@@ -83,11 +100,18 @@ const Header2 = () => {
             </li>
             <li className="flex items-center space-x-3">
               <FaEnvelope size={20} />
-              <Link to="/contact" className="text-black" onClick={toggleSidebar}>
+              <Link
+                to="/contact"
+                className="text-black"
+                onClick={toggleSidebar}
+              >
                 Message
               </Link>
             </li>
-            <li className="flex items-center space-x-3 cursor-pointer" onClick={handleLogout}>
+            <li
+              className="flex items-center space-x-3 cursor-pointer"
+              onClick={handleLogout}
+            >
               <FaSignOutAlt size={20} />
               <span className="text-black">Logout</span>
             </li>

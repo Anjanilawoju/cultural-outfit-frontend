@@ -16,6 +16,8 @@ import Tamang from "./components/page/Categories/tamangpage.jsx";
 import Magar from "./components/page/Categories/magarpage.jsx";
 import Sherpa from "./components/page/Categories/sherpapage.jsx";
 import Checkout from "./components/page/cartpage/checkout.jsx";
+import Order from "./components/page/orderpage/order.jsx";
+import Payment from "./components/page/cartpage/paymentsuccessful.jsx";
 
 const AppRoutes = () => {
   return (
@@ -36,7 +38,9 @@ const AppRoutes = () => {
         <Route path="/magar" element={<Magar />} />
         <Route path="/sherpa" element={<Sherpa />} />
         <Route path="/cartempty" element={<Cartempty />} />
+        <Route path="/order" element={<Order />} />
         <Route path="/checkout/:total" element={<Checkout />} />
+        <Route path="/payment" element={<Payment />} />
         <Route path="/*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>

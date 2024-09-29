@@ -4,7 +4,6 @@ import { ToastContainer } from "react-toastify";
 import AppRoutes from "./Route";
 
 function App() {
-  // console.log
   return (
     <>
       <AppRoutes />

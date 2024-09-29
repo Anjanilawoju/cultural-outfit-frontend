@@ -9,7 +9,9 @@ const ProductDisplay = ({ image, productName, price, discount, product_id, ratin
     const [data, setData] = useState({
         product_id: product_id,
         size: 'M',
-        quantity: 1
+        quantity: 1,
+        rating:0,
+        review:''
     });
 
     const [errorMessage, setErrorMessage] = useState(null); // To handle errors
