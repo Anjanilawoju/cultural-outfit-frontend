@@ -10,6 +10,7 @@ function Cart() {
   const [productList, setProductList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isReviewSubmitted, setIsReviewSubmitted] = useState(false);
   const navigate = useNavigate();
   const shippingFee = 50;
   const discount = 0;
@@ -22,7 +23,8 @@ function Cart() {
         setCart(
           response.data.map((item) => ({
             ...item,
-            size: "S", // Default size
+            size: "S", // default size
+            preference: "",
             review: "",
             rating: 0,
           }))
@@ -36,7 +38,7 @@ function Cart() {
     fetchCartData();
   }, []);
 
-  // Fetch product details for items in cart
+  // Fetch product details for items in the cart
   useEffect(() => {
     if (cart.length > 0) {
       const fetchProductDetails = async () => {
@@ -90,6 +92,12 @@ function Cart() {
     setCart(newCart);
   };
 
+  const handlePreferenceChange = (index, value) => {
+    const newCart = [...cart];
+    newCart[index].preference = value;
+    setCart(newCart);
+  };
+
   const handleRatingChange = (index, value) => {
     const newCart = [...cart];
     newCart[index].rating = value;
@@ -100,6 +108,24 @@ function Cart() {
     const newCart = [...cart];
     newCart[index].review = value;
     setCart(newCart);
+  };
+
+  const handleReviewSubmit = async (index) => {
+    const item = cart[index];
+    try {
+      await axios.put(`http://localhost:8000/cart/${item.id}/`, {
+        product: item.product_id,
+        quantity: item.quantity,
+        size: item.size,
+        rating: item.rating,
+        review: item.review,
+        preference: item.preference, // Include preference in the request
+      });
+      setIsReviewSubmitted(true); // Show success message
+      setTimeout(() => setIsReviewSubmitted(false), 3000); // Hide after 3 seconds
+    } catch (error) {
+      console.error("Error updating review:", error);
+    }
   };
 
   const calculateSubtotal = () => {
@@ -136,7 +162,7 @@ function Cart() {
             return (
               <div
                 key={item.product_id}
-                className="bg-gray-100 rounded-md p-4 w-full md:w-3/4"
+                className="bg-gray-100 rounded-md p-4 w-full md:w-3/5"
               >
                 <div className="flex justify-between">
                   <div className="flex">
@@ -159,11 +185,12 @@ function Cart() {
                         {product ? product.desc : "Product Description"}
                       </p>
 
-                      <div className="mt-4">
+                      <div className="mt-4 ">
+                        <div className= "flex flex-row ">
                         <p className="text-gray-600 font-semibold">
                           Select Size:
                         </p>
-                        <div className="mt-2">
+                        <div >
                           <select
                             value={item.size}
                             onChange={(e) =>
@@ -178,6 +205,30 @@ function Cart() {
                           </select>
                         </div>
 
+                        {/* Preference Input */}
+                        <div className=" px-10 ">
+                          <p className="text-gray-600 font-normal">
+                            Your Preference:
+                          </p>
+                          <div className="flex flex-row ">
+                          <input
+                            type="text"
+                            value={item.preference}
+                            onChange={(e) =>
+                              handlePreferenceChange(index, e.target.value)
+                            }
+                            className="border p-1 rounded w-full text-sm"
+                            placeholder="Enter any preferences..."
+                            />
+                            <button className=" bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded"
+                            onClick={() => handleReviewSubmit(index)}
+                          >
+                            Send </button>
+                            </div>
+                        </div>
+                        </div>
+
+                        {/* Rating & Review Section */}
                         <div className="mt-2">
                           <p className="text-gray-600 font-semibold">
                             Rate this product:
@@ -199,68 +250,55 @@ function Cart() {
                               </span>
                             ))}
                           </div>
+                          <div className="mt-4">
+                            <textarea
+                              value={item.review}
+                              onChange={(e) =>
+                                handleReviewChange(index, e.target.value)
+                              }
+                              className="border p-1 rounded w-full h-18 text-sm"
+                              rows="1"
+                              cols="40"
+                              placeholder="Write your comment..."
+                            ></textarea>
+                            <button
+                              className="mt-1 bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded"
+                              onClick={() => handleReviewSubmit(index)}
+                            >
+                              Send Review
+                            </button>
 
-                          <div className="mt-4 flex items-center gap-2">
-                            <h2 className="text-lg font-semibold">
-                              Product Review:
-                            </h2>
-                            <div className="flex gap-6 ml-4">
-                              {[
-                                "Poor",
-                                "Average",
-                                "Good",
-                                "Very Good",
-                                "Excellent",
-                              ].map((value) => (
-                                <div
-                                  key={value}
-                                  className="flex items-center gap-1"
-                                >
-                                  <input
-                                    type="radio"
-                                    id={value}
-                                    name={`review-${index}`}
-                                    value={value}
-                                    onChange={(e) =>
-                                      handleReviewChange(index, e.target.value)
-                                    }
-                                  />
-                                  <label htmlFor={value} className="ml-1">
-                                    {value}
-                                  </label>
-                                </div>
-                              ))}
-                            </div>
+                            {isReviewSubmitted && (
+                              <p className="text-green-500 mt-2">
+                                Review submitted successfully!
+                              </p>
+                            )}
                           </div>
                         </div>
                       </div>
                     </div>
-
-                    <div className="flex flex-col justify-between items-end">
-                      <div className="flex items-center">
+                    
+                    <div className="flex flex-col items-end ">
+                      <div className="flex items-center mt-4 ">
                         <button
                           onClick={() => handleDecrement(index)}
-                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                          className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-l"
                         >
                           -
                         </button>
-                        <span className="mx-4 text-gray-600">
+                        <span className="px-4 py-2 bg-white border">
                           {item.quantity}
                         </span>
                         <button
                           onClick={() => handleIncrement(index)}
-                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                          className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-r"
                         >
                           +
                         </button>
                       </div>
-
-                      <p className="mt-4 text-lg font-bold">
-                        Rs. {product ? product.price * item.quantity : "N/A"}
-                      </p>
                       <button
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-2"
                         onClick={() => handleDelete(index)}
+                        className="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded mt-40"
                       >
                         Delete
                       </button>
@@ -271,59 +309,45 @@ function Cart() {
             );
           })
         ) : (
-          <div className="flex flex-col items-center justify-center h-screen bg-cream-100">
-            <div>
-              <img src={cartemptypage} alt="cart is empty" />
-            </div>
-
-            <div className="mt-8 text-center text-xl">
-              Your cart is empty and sad :(
-            </div>
-            <div className="mt-2 text-center text-sm text-gray-600">
-              Add something to make it happy!
-            </div>
+          <div className="flex flex-col justify-center items-center">
+            <img src={cartemptypage} alt="Empty cart" className="h-56" />
+            <p>Your cart is empty</p>
             <button
+              className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 mt-4 rounded"
               onClick={handleContinueShopping}
-              className="mt-8 px-6 py-2 rounded-md bg-orange-600 text-white font-medium hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500"
             >
               Continue Shopping
             </button>
           </div>
         )}
-
-        {/* Order Summary Section */}
-        {cart.length > 0 && (
-          <div className="bg-gray-200 rounded-md p-4 w-full md:w-3/4">
-            <h2 className="text-xl font-bold mb-4">Order Summary</h2>
-            <div className="flex justify-between">
-              <p>Subtotal</p>
-              <p>Rs. {subtotal}</p>
-            </div>
-            <div className="flex justify-between">
-              <p>Shipping Fee</p>
-              <p>Rs. {shippingFee}</p>
-            </div>
-            <div className="flex justify-between">
-              <p>Discount on Shipping Fee</p>
-              <p>Rs. {discount}</p>
-            </div>
-            <div className="flex justify-between">
-              <p>Total Items</p>
-              <p>{cart.reduce((sum, item) => sum + item.quantity, 0)}</p>
-            </div>
-            <div className="flex justify-between mt-4">
-              <p className="font-bold">Total</p>
-              <p className="font-bold">Rs. {total}</p>
-            </div>
-            <button
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 w-full"
-              onClick={handleCheckout}
-            >
-              Proceed to checkout
-            </button>
-          </div>
-        )}
       </div>
+
+      {cart.length > 0 && (
+        <div className="bg-gray-100 w-full md:w-3/5 mx-auto p-4 mb-8 rounded">
+          <div className="flex justify-between mb-2">
+            <p className="text-lg font-semibold">Subtotal:</p>
+            <p className="text-lg">Rs {subtotal}</p>
+          </div>
+          <div className="flex justify-between mb-2">
+            <p className="text-lg font-semibold">Shipping Fee:</p>
+            <p className="text-lg">Rs {shippingFee}</p>
+          </div>
+          <div className="flex justify-between mb-4">
+            <p className="text-lg font-semibold">Discount:</p>
+            <p className="text-lg">Rs {discount}</p>
+          </div>
+          <div className="flex justify-between mb-4 border-t pt-4">
+            <p className="text-lg font-semibold">Total:</p>
+            <p className="text-lg">Rs {total}</p>
+          </div>
+          <button
+            className="bg-green-500 hover:bg-green-700 text-white py-2 px-4 w-full rounded"
+            onClick={handleCheckout}
+          >
+            Proceed to Checkout
+          </button>
+        </div>
+      )}
 
       <Footer />
     </div>

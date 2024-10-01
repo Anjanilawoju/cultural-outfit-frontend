@@ -55,10 +55,10 @@ const Header2 = () => {
             <LuShoppingCart size={24} />
             <span className="ml-2">View Cart</span>
           </Link>
-          <Link to="/Order" className="flex items-center">
+          {/* <Link to="/Order" className="flex items-center">
             <LuShoppingCart size={24} />
             <span className="ml-2">Your Order</span>
-          </Link>
+          </Link> */}
           <Link to="/contact" className="flex items-center">
             <FaAddressBook size={24} />
             <span className="ml-2">Contact</span>

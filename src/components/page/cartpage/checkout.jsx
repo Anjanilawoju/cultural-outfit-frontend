@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header2 from "../header/header2.jsx";
 import Footer from "../../organisms/footerspage.jsx";
-import KhaltiCheckout from "khalti-checkout-web";
-import { toast } from "react-toastify";
 import axios from "axios";
 
 function Checkout({ cart, setCart }) {
@@ -17,30 +15,6 @@ function Checkout({ cart, setCart }) {
   const { total } = useParams();
 
   const navigate = useNavigate();
-
-  // Khalti configuration
-  const khaltiConfig = {
-    publicKey: "test_public_key_cca60a6e0b6e44b5b1af97bb1732c9c4",
-    productIdentity: "1234567890",
-    productName: "Your Product Name",
-    productUrl: "http://localhost:3000",
-    eventHandler: {
-      onSuccess(payload) {
-        toast.success("Payment done successfully!");
-        handleOrderPlace("Khalti"); // Proceed with placing the order
-      },
-      onError(error) {
-        console.error("Payment error:", error);
-        toast.error("Payment failed. Please try again.");
-      },
-      onClose() {
-        console.log("Khalti payment widget closed");
-      },
-    },
-    paymentPreference: ["KHALTI", "CONNECT_IPS", "SCT"],
-  };
-
-  const khaltiCheckout = new KhaltiCheckout(khaltiConfig);
 
   // Validation for form inputs
   const validateForm = () => {
@@ -73,8 +47,8 @@ function Checkout({ cart, setCart }) {
 
       if (response.status === 201) {
         setOrderMessage("Your order has been placed successfully.");
-        if (paymentType === "Khalti") {
-          navigate("/payment"); // Navigate to payment page
+        if (paymentType === "Esewa") {
+          navigate(`/payment/${total}`); // Navigate to payment page
         } else {
           navigate("/profile"); // Navigate to profile page after COD
         }
@@ -89,10 +63,11 @@ function Checkout({ cart, setCart }) {
   const handleCheckout = () => {
     if (!validateForm()) return;
 
-    if (paymentMethod === "Khalti") {
-      khaltiCheckout.show({ amount: total ? total * 100 : 1000 }); // Amount in paisa
+    if (paymentMethod === "Esewa") {
+      navigate(`/payment/${total}`);
     } else if (paymentMethod === "Cash on Delivery") {
-      handleOrderPlace("Cash on Delivery");
+      // handleOrderPlace("Cash on Delivery");
+      navigate("/profile");
     } else {
       setErrorMessage("Please select a valid payment method.");
     }
@@ -139,7 +114,7 @@ function Checkout({ cart, setCart }) {
             <div className="flex flex-col">
               <label htmlFor="phone">Phone*</label>
               <input
-                type="text"
+                type="number"
                 id="phone"
                 placeholder="Enter your phone number"
                 className="border-2 border-slate-300 p-2 rounded-md"
@@ -180,13 +155,13 @@ function Checkout({ cart, setCart }) {
             <div>
               <input
                 type="radio"
-                id="Khalti"
+                id="Esewa"
                 name="paymentMethod"
-                value="Khalti"
+                value="Esewa"
                 onChange={(e) => setPaymentMethod(e.target.value)}
               />
-              <label htmlFor="Khalti" className="ml-2">
-                Khalti
+              <label htmlFor="Esewa" className="ml-2">
+                Esewa
               </label>
             </div>
           </div>
