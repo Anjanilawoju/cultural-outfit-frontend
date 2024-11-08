@@ -11,9 +11,24 @@ function Cart() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isReviewSubmitted, setIsReviewSubmitted] = useState(false);
+  const [review, setReview] = useState("");
+  const [review2, setReview2] = useState("");
+
+  const [preference, setPreference] = useState("");
+  const [preference2, setPreference2] = useState("");
+
   const navigate = useNavigate();
   const shippingFee = 50;
   const discount = 0;
+
+  const addPreference2 = () => {
+    setPreference2(preference);
+  };
+
+  const addReview = () => {
+    setReview2(review);
+    setReview(" ");
+  };
 
   // Fetch cart data from API
   useEffect(() => {
@@ -93,6 +108,7 @@ function Cart() {
   };
 
   const handlePreferenceChange = (index, value) => {
+    setPreference(value);
     const newCart = [...cart];
     newCart[index].preference = value;
     setCart(newCart);
@@ -105,6 +121,7 @@ function Cart() {
   };
 
   const handleReviewChange = (index, value) => {
+    setReview(value);
     const newCart = [...cart];
     newCart[index].review = value;
     setCart(newCart);
@@ -186,48 +203,56 @@ function Cart() {
                       </p>
 
                       <div className="mt-4 ">
-                        <div className= "flex flex-row ">
-                        <p className="text-gray-600 font-semibold">
-                          Select Size:
-                        </p>
-                        <div >
-                          <select
-                            value={item.size}
-                            onChange={(e) =>
-                              handleSizeChange(index, e.target.value)
-                            }
-                            className="border p-1 rounded"
-                          >
-                            <option value="S">S</option>
-                            <option value="M">M</option>
-                            <option value="L">L</option>
-                            <option value="XL">XL</option>
-                          </select>
-                        </div>
-
-                        {/* Preference Input */}
-                        <div className=" px-10 ">
-                          <p className="text-gray-600 font-normal">
-                            Your Preference:
+                        <div className="flex flex-col ">
+                          <p className="text-gray-600 font-semibold">
+                            Select Size:
                           </p>
-                          <div className="flex flex-row ">
-                          <input
-                            type="text"
-                            value={item.preference}
-                            onChange={(e) =>
-                              handlePreferenceChange(index, e.target.value)
-                            }
-                            className="border p-1 rounded w-full text-sm"
-                            placeholder="Enter any preferences..."
-                            />
-                            <button className=" bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded"
-                            onClick={() => handleReviewSubmit(index)}
-                          >
-                            Send </button>
+                          <div>
+                            <select
+                              value={item.size}
+                              onChange={(e) =>
+                                handleSizeChange(index, e.target.value)
+                              }
+                              className="border p-1 rounded"
+                            >
+                              <option value="S">S</option>
+                              <option value="M">M</option>
+                              <option value="L">L</option>
+                              <option value="XL">XL</option>
+                            </select>                            
+                          </div>                         
+                          {/* Preference Input */}
+                          <div className=" px-1 ">                                                  
+                            <p className="text-gray-600 font-normal">
+                              Your Preference:
+                            </p>
+                            <div className="flex flex-row ">
+                              <input
+                                type="text"
+                                value={preference}
+                                onChange={(e) => {
+                                  // setPreference(e.target.value);
+                                  handlePreferenceChange(index, e.target.value);
+                                }}
+                                className="border p-1 rounded w-full text-sm"
+                                placeholder="Write your preferences..."
+                              />
+                              <button
+                                className=" bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded"
+                                onClick={() => {
+                                  setPreference(" ");
+                                  // setIsReviewSubmitted(true)
+                                  addPreference2();
+                                  handleReviewSubmit(index);
+                                }}
+                              >
+                                Send
+                              </button>
+                              <span className="ml-4 w-96">{preference2}</span>
                             </div>
+                          </div>
                         </div>
-                        </div>
-
+                        {/* {preference} */}
                         {/* Rating & Review Section */}
                         <div className="mt-2">
                           <p className="text-gray-600 font-semibold">
@@ -242,28 +267,33 @@ function Cart() {
                                     ? "text-yellow-500"
                                     : "text-gray-400"
                                 }`}
-                                onClick={() =>
-                                  handleRatingChange(index, value)
-                                }
+                                onClick={() => handleRatingChange(index, value)}
                               >
                                 ★
                               </span>
                             ))}
                           </div>
+                          <div>{review2}</div>
                           <div className="mt-4">
                             <textarea
-                              value={item.review}
+                              value={review}
                               onChange={(e) =>
                                 handleReviewChange(index, e.target.value)
                               }
-                              className="border p-1 rounded w-full h-18 text-sm"
+                              className="border p-1 rounded w-full h-15 text-sm"
                               rows="1"
                               cols="40"
                               placeholder="Write your comment..."
                             ></textarea>
                             <button
                               className="mt-1 bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded"
-                              onClick={() => handleReviewSubmit(index)}
+                              // onClick={() => handleReviewSubmit(index)}
+                              onClick={() => {
+                                setIsReviewSubmitted(true);
+                                handleReviewSubmit(index);
+                                addReview();
+                                setReview(" ");
+                              }}
                             >
                               Send Review
                             </button>
@@ -277,7 +307,7 @@ function Cart() {
                         </div>
                       </div>
                     </div>
-                    
+                    {isReviewSubmitted && review}
                     <div className="flex flex-col items-end ">
                       <div className="flex items-center mt-4 ">
                         <button
